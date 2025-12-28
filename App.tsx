@@ -34,6 +34,7 @@ const App: React.FC = () => {
         setActiveView={setActiveView} 
       />
 
+      {/* Main container without flex-col if on landing to allow standard document flow */}
       <main className="flex-grow">
         {activeView === 'landing' && (
           <LandingPage 
@@ -42,24 +43,26 @@ const App: React.FC = () => {
           />
         )}
 
-        <div className="container mx-auto px-4 py-12">
-          {activeView === 'editor' && (
-            <Editor 
-              image={uploadedImage} 
-              onBack={() => setActiveView('landing')}
-              onReset={() => {
-                setUploadedImage(null);
-                setActiveView('landing');
-              }}
-            />
-          )}
+        {(activeView === 'editor' || activeView === 'gallery') && (
+          <div className="container mx-auto px-4 py-8 md:py-12">
+            {activeView === 'editor' && (
+              <Editor 
+                image={uploadedImage} 
+                onBack={() => setActiveView('landing')}
+                onReset={() => {
+                  setUploadedImage(null);
+                  setActiveView('landing');
+                }}
+              />
+            )}
 
-          {activeView === 'gallery' && (
-            <Gallery onUseFrame={(frameId) => {
-              setActiveView('editor');
-            }} />
-          )}
-        </div>
+            {activeView === 'gallery' && (
+              <Gallery onUseFrame={(frameId) => {
+                setActiveView('editor');
+              }} />
+            )}
+          </div>
+        )}
 
         <input 
           id="image-upload" 
@@ -70,6 +73,7 @@ const App: React.FC = () => {
         />
       </main>
 
+      {/* Footer is part of the main vertical flex container of the App */}
       <Footer />
     </div>
   );
