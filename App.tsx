@@ -1,15 +1,42 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Header from './components/Header';
 import LandingPage from './components/LandingPage';
 import Editor from './components/Editor';
 import Gallery from './components/Gallery';
 import Footer from './components/Footer';
-import { ViewState } from './types';
+import AdminPanel from './components/AdminPanel';
+import { ViewState, Frame } from './types';
+import { FRAMES as DEFAULT_FRAMES } from './constants';
 
 const App: React.FC = () => {
   const [activeView, setActiveView] = useState<ViewState>('landing');
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
+  const [allFrames, setAllFrames] = useState<Frame[]>([]);
+
+  // Load frames from localStorage on init
+  useEffect(() => {
+    const saved = localStorage.getItem('ritualsnap_custom_frames');
+    const custom = saved ? JSON.parse(saved) : [];
+    // Merge defaults with custom frames
+    setAllFrames([...DEFAULT_FRAMES, ...custom]);
+  }, []);
+
+  const handleAddFrame = (newFrame: Frame) => {
+    const saved = localStorage.getItem('ritualsnap_custom_frames');
+    const custom = saved ? JSON.parse(saved) : [];
+    const updatedCustom = [newFrame, ...custom];
+    localStorage.setItem('ritualsnap_custom_frames', JSON.stringify(updatedCustom));
+    setAllFrames([...DEFAULT_FRAMES, ...updatedCustom]);
+  };
+
+  const handleDeleteFrame = (id: string) => {
+    const saved = localStorage.getItem('ritualsnap_custom_frames');
+    const custom = saved ? JSON.parse(saved) : [];
+    const updatedCustom = custom.filter((f: Frame) => f.id !== id);
+    localStorage.setItem('ritualsnap_custom_frames', JSON.stringify(updatedCustom));
+    setAllFrames([...DEFAULT_FRAMES, ...updatedCustom]);
+  };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -34,7 +61,7 @@ const App: React.FC = () => {
         setActiveView={setActiveView} 
       />
 
-      {/* Main container without flex-col if on landing to allow standard document flow */}
+      {/* Removed global pt-16/20. Specific components will handle their own spacing to accommodate the sticky header. */}
       <main className="flex-grow">
         {activeView === 'landing' && (
           <LandingPage 
@@ -43,11 +70,23 @@ const App: React.FC = () => {
           />
         )}
 
+        {activeView === 'admin' && (
+          <div className="container mx-auto px-4 py-8">
+            <AdminPanel 
+              frames={allFrames.filter(f => f.isCustom)} 
+              onAdd={handleAddFrame} 
+              onDelete={handleDeleteFrame}
+              onBack={() => setActiveView('landing')}
+            />
+          </div>
+        )}
+
         {(activeView === 'editor' || activeView === 'gallery') && (
           <div className="container mx-auto px-4 py-8 md:py-12">
             {activeView === 'editor' && (
               <Editor 
                 image={uploadedImage} 
+                frames={allFrames}
                 onBack={() => setActiveView('landing')}
                 onReset={() => {
                   setUploadedImage(null);
@@ -57,9 +96,12 @@ const App: React.FC = () => {
             )}
 
             {activeView === 'gallery' && (
-              <Gallery onUseFrame={(frameId) => {
-                setActiveView('editor');
-              }} />
+              <Gallery 
+                frames={allFrames}
+                onUseFrame={(frameId) => {
+                  setActiveView('editor');
+                }} 
+              />
             )}
           </div>
         )}
@@ -73,8 +115,7 @@ const App: React.FC = () => {
         />
       </main>
 
-      {/* Footer is part of the main vertical flex container of the App */}
-      <Footer />
+      <Footer onAdminClick={() => setActiveView('admin')} />
     </div>
   );
 };

@@ -1,23 +1,26 @@
 
 import React from 'react';
 
-const Footer: React.FC = () => {
+interface FooterProps {
+  onAdminClick?: () => void;
+}
+
+const Footer: React.FC<FooterProps> = ({ onAdminClick }) => {
   return (
     <footer className="w-full py-16 px-6 border-t border-green-900/20 bg-black relative mt-auto">
-      {/* Dynamic spacing for mobile navigation bars */}
       <div className="pb-safe h-0 w-full" />
       
       <div className="container mx-auto relative z-10">
         <div className="flex flex-col items-center justify-center space-y-6">
           
-          {/* Creator Sigil & Credit */}
           <div className="flex flex-col items-center space-y-4 group">
             <div className="relative">
               <div className="absolute -inset-2 bg-green-500/20 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
               <img 
                 src="https://pbs.twimg.com/profile_images/1801955577763094529/5qtIvl5X_400x400.jpg" 
                 alt="Void Architect" 
-                className="w-14 h-14 rounded-full border border-green-500/30 group-hover:border-green-500 transition-all duration-500 shadow-lg relative z-10"
+                className="w-14 h-14 rounded-full border border-green-500/30 group-hover:border-green-500 transition-all duration-500 shadow-lg relative z-10 cursor-pointer"
+                onClick={onAdminClick}
               />
             </div>
             
@@ -38,7 +41,6 @@ const Footer: React.FC = () => {
             </div>
           </div>
 
-          {/* Bottom Divider Line */}
           <div className="flex items-center gap-4 w-full max-w-[200px]">
             <div className="h-[1px] flex-grow bg-gradient-to-r from-transparent via-green-900/50 to-transparent" />
             <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse shadow-[0_0_10px_#39FF14]" />
@@ -47,6 +49,7 @@ const Footer: React.FC = () => {
 
           <div className="text-[8px] md:text-[10px] text-zinc-800 uppercase tracking-[0.6em] font-mystical text-center">
             RitualSnap Protocol &copy; {new Date().getFullYear()}
+            <span onClick={onAdminClick} className="ml-4 cursor-pointer hover:text-green-900 transition-colors opacity-10">Forge</span>
           </div>
         </div>
       </div>

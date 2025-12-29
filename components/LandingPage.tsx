@@ -16,7 +16,6 @@ const LandingPage: React.FC<LandingPageProps> = ({ onUploadClick, onViewGallery 
         </div>
         
         <div className="relative z-10 space-y-6 md:space-y-8 animate-fade-in flex flex-col items-center max-w-4xl mx-auto">
-          {/* Main Theme Resource Image - The Sigil */}
           <div className="relative mb-2 md:mb-8 md:mt-16 group">
             <div className="absolute -inset-4 bg-green-500/20 rounded-full blur-xl group-hover:bg-green-500/40 transition-all duration-1000 animate-pulse" />
             <img 
@@ -38,18 +37,14 @@ const LandingPage: React.FC<LandingPageProps> = ({ onUploadClick, onViewGallery 
             </p>
           </div>
           
-          <div className="flex flex-col md:flex-row gap-4 md:gap-6 justify-center pt-4 w-full md:w-auto px-6">
+          <div className="flex justify-center pt-4 w-full md:w-auto px-6">
             <button 
               onClick={onUploadClick}
-              className="w-full md:w-auto px-10 py-4 md:py-5 bg-green-500 text-black font-bold uppercase tracking-widest text-[12px] md:text-sm hover:bg-green-400 hover:scale-105 transition-all shadow-[0_0_30px_rgba(57,255,20,0.4)] active:scale-95"
+              className="group relative w-full md:w-auto px-12 py-5 bg-green-500 text-black font-bold uppercase tracking-[0.3em] text-[12px] md:text-sm transition-all duration-500 shadow-[0_0_20px_rgba(57,255,20,0.3)] hover:shadow-[0_0_50px_rgba(57,255,20,0.6)] hover:scale-105 active:scale-95 overflow-hidden rounded-full"
             >
-              Begin Ritual
-            </button>
-            <button 
-              onClick={onViewGallery}
-              className="w-full md:w-auto px-10 py-4 md:py-5 border border-gray-800 text-white font-bold uppercase tracking-widest text-[12px] md:text-sm hover:border-green-500 transition-all bg-black/50 backdrop-blur-sm active:scale-95"
-            >
-              Enter Vault
+              <span className="relative z-10">Begin Ritual</span>
+              <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-500" />
+              <div className="absolute -inset-1 border border-green-400 opacity-0 group-hover:opacity-100 transition-opacity blur-sm rounded-full" />
             </button>
           </div>
         </div>
@@ -134,10 +129,10 @@ const LandingPage: React.FC<LandingPageProps> = ({ onUploadClick, onViewGallery 
             </div>
         </div>
         <div className="container mx-auto px-6 relative z-10 space-y-8">
-          <h2 className="text-3xl md:text-5xl font-mystical">READY TO <span className="neon-text">BEGIN?</span></h2>
+          <h2 className="text-3xl md:text-5xl font-mystical uppercase">Ready to <span className="neon-text">Begin?</span></h2>
           <button 
             onClick={onUploadClick}
-            className="w-full md:w-auto px-12 md:px-16 py-5 md:py-6 bg-transparent border-2 border-green-500 text-green-500 font-bold uppercase tracking-[0.4em] hover:bg-green-500 hover:text-black transition-all active:scale-95 text-xs md:text-sm"
+            className="group relative w-full md:w-auto px-16 py-6 bg-transparent border-2 border-green-500 text-green-500 font-bold uppercase tracking-[0.4em] transition-all duration-500 hover:bg-green-500 hover:text-black hover:shadow-[0_0_40px_rgba(57,255,20,0.5)] active:scale-95 text-xs md:text-sm rounded-full"
           >
             Start Ritual
           </button>

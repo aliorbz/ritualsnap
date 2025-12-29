@@ -10,10 +10,11 @@ export interface Frame {
   id: string;
   name: string;
   description: string;
-  imageUrl: string; // The path to the PNG frame with transparency
+  imageUrl: string; // Base64 or path
   thumbnailUrl: string;
   creator: Creator;
-  lore: string; // A mystical backstory for the frame
+  lore: string; 
+  isCustom?: boolean; // To distinguish between default and user-added
 }
 
-export type ViewState = 'landing' | 'editor' | 'gallery';
+export type ViewState = 'landing' | 'editor' | 'gallery' | 'admin';
