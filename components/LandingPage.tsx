@@ -63,12 +63,12 @@ const LandingPage: React.FC<LandingPageProps> = ({ onUploadClick, onViewGallery 
             <div className="space-y-6 text-center md:text-left">
               <h2 className="text-3xl md:text-4xl font-mystical neon-text">THE SACRED ART</h2>
               <p className="text-gray-400 leading-relaxed text-sm md:text-lg">
-                RitualSnap is not merely a tool; it is a digital altar. We believe every image carries a fragment of a soul. Our frames are curated from the archives of modern magic, blending occult geometry with cyber-neon energy.
+                RitualSnap is not merely a tool... it is a digital altar. We believe every image carries a fragment of a soul. Our frames are curated from the archives of modern magic, blending occult geometry with cryptic energy.
               </p>
               <ul className="space-y-4 pt-4 text-left inline-block">
                 {[
-                  "No external uploads",
-                  "High-fidelity PNGs",
+                  "No sign in's",
+                  "High-fidelity downloads",
                   "Zero data collection",
                   "Creator recognition"
                 ].map((item, i) => (
