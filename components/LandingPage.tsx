@@ -33,7 +33,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onUploadClick, onViewGallery 
               RITUAL<span className="neon-text">SNAP</span>
             </h1>
             <p className="text-base md:text-2xl text-gray-400 font-light font-mystical italic leading-relaxed max-w-lg md:max-w-2xl mx-auto">
-              "Where pixels meet the primordial, and memories are bound in neon ink."
+              &quot;Where pixels meet the primordial, and memories are bound in neon ink.&quot;
             </p>
           </div>
           
@@ -67,7 +67,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onUploadClick, onViewGallery 
               </p>
               <ul className="space-y-4 pt-4 text-left inline-block">
                 {[
-                  "No sign in's",
+                  "Guest Access Enabled",
                   "High-fidelity downloads",
                   "Zero data collection",
                   "Creator recognition"

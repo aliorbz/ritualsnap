@@ -137,11 +137,11 @@ const App: React.FC = () => {
           <div className="grid grid-cols-1 gap-3 text-left">
             <div className="p-4 bg-zinc-950 border border-zinc-800 rounded-lg">
               <code className="text-green-500 font-bold block mb-1 uppercase tracking-widest text-[10px]">SUPABASE_URL</code>
-              <p className="text-zinc-600 text-[10px]">Found in Project Settings > API</p>
+              <p className="text-zinc-600 text-[10px]">Found in Project Settings &gt; API</p>
             </div>
             <div className="p-4 bg-zinc-950 border border-zinc-800 rounded-lg">
               <code className="text-green-500 font-bold block mb-1 uppercase tracking-widest text-[10px]">SUPABASE_ANON_KEY</code>
-              <p className="text-zinc-600 text-[10px]">Found in Project Settings > API (Project API Keys)</p>
+              <p className="text-zinc-600 text-[10px]">Found in Project Settings &gt; API (Project API Keys)</p>
             </div>
           </div>
           <p className="text-[10px] text-zinc-700 uppercase tracking-widest mt-6">Restart the ritual after binding these keys.</p>
