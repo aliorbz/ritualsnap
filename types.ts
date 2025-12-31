@@ -10,11 +10,11 @@ export interface Frame {
   id: string;
   name: string;
   description: string;
-  imageUrl: string; // Base64 or path
+  imageUrl: string; 
   thumbnailUrl: string;
   creator: Creator;
   lore: string; 
-  isCustom?: boolean; // To distinguish between default and user-added
+  isCustom?: boolean;
 }
 
-export type ViewState = 'landing' | 'editor' | 'gallery' | 'admin';
+export type ViewState = 'landing' | 'editor' | 'gallery' | 'admin' | 'auth';
