@@ -11,12 +11,39 @@ import { ViewState, Frame } from './types';
 import { supabase, isSupabaseConfigured } from './supabaseClient';
 import { Session } from '@supabase/supabase-js';
 
+/**
+ * REQUIRED SUPABASE SQL SCHEMA:
+ * 
+ * create table frames (
+ *   id uuid default gen_random_uuid() primary key,
+ *   created_at timestamp with time zone default timezone('utc'::text, now()) not null,
+ *   name text not null,
+ *   description text,
+ *   lore text,
+ *   image_url text not null,
+ *   thumbnail_url text,
+ *   creator_name text,
+ *   creator_handle text,
+ *   creator_social_url text,
+ *   is_custom boolean default true
+ * );
+ * 
+ * -- Enable RLS
+ * alter table frames enable row level security;
+ * 
+ * -- Policies
+ * create policy "Allow public read" on frames for select using (true);
+ * create policy "Allow authenticated insert" on frames for insert with check (auth.role() = 'authenticated');
+ * create policy "Allow authenticated delete" on frames for delete using (auth.role() = 'authenticated');
+ */
+
 const App: React.FC = () => {
   const [activeView, setActiveView] = useState<ViewState>('landing');
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
   const [allFrames, setAllFrames] = useState<Frame[]>([]);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const [dbError, setDbError] = useState<string | null>(null);
 
   // Fetch Session and Frames
   useEffect(() => {
@@ -41,40 +68,55 @@ const App: React.FC = () => {
   const fetchFrames = async () => {
     if (!supabase) return;
     setLoading(true);
+    setDbError(null);
     try {
+      console.log("Communing with the vault...");
       const { data, error } = await supabase
         .from('frames')
         .select('*')
         .order('created_at', { ascending: false });
 
-      if (!error && data) {
+      if (error) {
+        const errorMsg = `Vault retrieval failed: ${error.message} (${error.code})`;
+        console.error(errorMsg, error);
+        setDbError(errorMsg);
+        return;
+      }
+
+      if (data) {
         const mappedFrames: Frame[] = data.map(f => ({
           id: f.id,
           name: f.name,
           description: f.description,
           imageUrl: f.image_url,
-          thumbnailUrl: f.thumbnail_url,
+          thumbnailUrl: f.thumbnail_url || f.image_url,
           lore: f.lore,
           isCustom: f.is_custom,
           creator: {
-            name: f.creator_name,
-            handle: f.creator_handle,
-            socialUrl: f.creator_social_url,
+            name: f.creator_name || 'Unknown Architect',
+            handle: f.creator_handle || '@anonymous',
+            socialUrl: f.creator_social_url || '#',
             platform: 'Instagram'
           }
         }));
         setAllFrames(mappedFrames);
+        console.log(`Successfully retrieved ${mappedFrames.length} sigils.`);
       }
-    } catch (err) {
-      console.error("Failed to fetch sigils:", err);
+    } catch (err: any) {
+      const msg = err.message || JSON.stringify(err);
+      console.error("Fatal vault error:", msg);
+      setDbError(`Fatal vault error: ${msg}`);
     } finally {
       setLoading(false);
     }
   };
 
   const handleAddFrame = async (newFrame: Frame) => {
-    if (!supabase) return;
-    const { error } = await supabase.from('frames').insert([{
+    if (!supabase) return false;
+    
+    console.log("Attempting to bind sigil to global vault...", newFrame.name);
+    
+    const payload = {
       name: newFrame.name,
       description: newFrame.description,
       lore: newFrame.lore,
@@ -84,12 +126,21 @@ const App: React.FC = () => {
       creator_handle: newFrame.creator.handle,
       creator_social_url: newFrame.creator.socialUrl,
       is_custom: true
-    }]);
+    };
+
+    const { data, error } = await supabase
+      .from('frames')
+      .insert([payload])
+      .select();
 
     if (!error) {
-      fetchFrames();
+      console.log("Sigil successfully bound:", data);
+      await fetchFrames();
+      return true;
     } else {
-      alert("Error binding sigil to global vault: " + error.message);
+      console.error("Database binding failed:", error.message, error.details);
+      alert(`The void rejected the sigil: ${error.message}\n\nDetails: ${error.details || 'None'}`);
+      return false;
     }
   };
 
@@ -97,9 +148,11 @@ const App: React.FC = () => {
     if (!supabase) return;
     const { error } = await supabase.from('frames').delete().eq('id', id);
     if (!error) {
+      console.log(`Sigil ${id} banished.`);
       fetchFrames();
     } else {
-      alert("Void error: could not banish sigil.");
+      console.error("Banishment failed:", error.message);
+      alert(`Void error: ${error.message}`);
     }
   };
 
@@ -119,7 +172,6 @@ const App: React.FC = () => {
     document.getElementById('image-upload')?.click();
   };
 
-  // If Supabase isn't configured, show a setup guide instead of crashing
   if (!isSupabaseConfigured) {
     return (
       <div className="min-h-screen bg-black flex flex-col items-center justify-center p-6 text-center space-y-8 selection:bg-green-500">
@@ -132,19 +184,8 @@ const App: React.FC = () => {
           <h1 className="text-3xl font-mystical neon-text uppercase tracking-widest">Sanctum Connection Required</h1>
           <p className="text-zinc-400 text-sm leading-relaxed">
             The ritual cannot proceed without a connection to the Great Database. 
-            You must add the following **Secrets** (Environment Variables) to your project settings:
+            Add your SUPABASE_URL and SUPABASE_ANON_KEY to your project environment.
           </p>
-          <div className="grid grid-cols-1 gap-3 text-left">
-            <div className="p-4 bg-zinc-950 border border-zinc-800 rounded-lg">
-              <code className="text-green-500 font-bold block mb-1 uppercase tracking-widest text-[10px]">SUPABASE_URL</code>
-              <p className="text-zinc-600 text-[10px]">Found in Project Settings &gt; API</p>
-            </div>
-            <div className="p-4 bg-zinc-950 border border-zinc-800 rounded-lg">
-              <code className="text-green-500 font-bold block mb-1 uppercase tracking-widest text-[10px]">SUPABASE_ANON_KEY</code>
-              <p className="text-zinc-600 text-[10px]">Found in Project Settings &gt; API (Project API Keys)</p>
-            </div>
-          </div>
-          <p className="text-[10px] text-zinc-700 uppercase tracking-widest mt-6">Restart the ritual after binding these keys.</p>
         </div>
       </div>
     );
@@ -205,6 +246,7 @@ const App: React.FC = () => {
               <Gallery 
                 frames={allFrames}
                 loading={loading}
+                errorMessage={dbError}
                 onUseFrame={(frameId) => {
                   setActiveView('editor');
                 }} 

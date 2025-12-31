@@ -5,10 +5,11 @@ import { Frame } from '../types';
 interface GalleryProps {
   frames: Frame[];
   loading?: boolean;
+  errorMessage?: string | null;
   onUseFrame: (id: string) => void;
 }
 
-const Gallery: React.FC<GalleryProps> = ({ frames, loading, onUseFrame }) => {
+const Gallery: React.FC<GalleryProps> = ({ frames, loading, errorMessage, onUseFrame }) => {
   const [selectedDetails, setSelectedDetails] = useState<Frame | null>(null);
   const [loadErrors, setLoadErrors] = useState<Record<string, boolean>>({});
 
@@ -27,6 +28,26 @@ const Gallery: React.FC<GalleryProps> = ({ frames, loading, onUseFrame }) => {
         <div className="flex flex-col items-center justify-center py-40">
            <div className="w-12 h-12 border-4 border-green-500/20 border-t-green-500 rounded-full animate-spin mb-4" />
            <p className="text-[10px] text-green-500 uppercase tracking-widest animate-pulse">Communing with the archives...</p>
+        </div>
+      ) : errorMessage ? (
+        <div className="flex flex-col items-center justify-center py-20 mx-4 border border-red-900/30 rounded-3xl bg-red-950/10 text-center space-y-4 max-w-2xl mx-auto">
+          <div className="w-16 h-16 bg-red-500/10 rounded-full flex items-center justify-center border border-red-500/30">
+            <svg className="w-8 h-8 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+          </div>
+          <div className="space-y-2 px-6">
+            <h3 className="text-lg font-mystical text-red-500 uppercase tracking-widest">Sanctum Breach</h3>
+            <p className="text-[10px] text-zinc-400 uppercase tracking-widest leading-relaxed">
+              The Great Database returned a cryptic message:
+            </p>
+            <div className="p-3 bg-black border border-red-900/30 rounded-lg">
+              <code className="text-[10px] text-red-400 font-mono break-all">{errorMessage}</code>
+            </div>
+            <p className="text-[9px] text-zinc-600 italic mt-4">
+              Hint: Ensure the 'frames' table exists and RLS policies allow public 'SELECT' access.
+            </p>
+          </div>
         </div>
       ) : frames.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 mx-4 border border-dashed border-green-900/30 rounded-3xl bg-black/40 animate-pulse">
